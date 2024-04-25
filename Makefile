@@ -1,23 +1,30 @@
+include .env
 SHELL := /bin/bash
 
 load_env:
 	@echo "Loading environment variables..."
-	@set -a; source .env; set +a
+	set -a; source .env; set +a
 	@echo "Done!"
 
 init:
 	@echo "Initializing..."
 	@make load_env
-	@cd terraform && terraform init
+	@cd terraform && terraform init -reconfigure\
+		-backend-config="bucket=${TF_STATE_BUCKET}"\
+		-backend-config="key=${TF_VAR_environment}/terraform.tfstate"\
+		-backend-config="region=${TF_VAR_aws_region}"	
 	@echo "Done!"
 
 plan:
 	@echo "Planning..."
+	@make load_env
 	@cd terraform && terraform plan
 	@echo "Done!"
 
+
 apply:
 	@echo "Applying..."
+	@make load_env
 	@cd terraform && terraform apply -auto-approve
 	@echo "Done!"
 	@echo "Saving key..."

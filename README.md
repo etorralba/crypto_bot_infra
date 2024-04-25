@@ -15,7 +15,11 @@ This repository contains the infrastructure for the Crypto Bot project. The infr
     TF_VAR_aws_region=your_aws_region
     TF_VAR_instance_type=your_instance_type
     TF_VAR_ami=your_ami
+    TF_STATE_BUCKET=your_state_bucket
+    AWS_PROFILE=your_aws_profile
     ```
+    - `TF_STATE_BUCKET`: The name of the S3 bucket to store the Terraform state file
+    - `AWS_PROFILE`: The name of the AWS profile to use in the case of multiple profiles locally
 3. Run `make init` to initialize the Terraform configuration
 4. Run `make plan` to see the changes that will be applied
 5. Run `make apply` to apply the changes
