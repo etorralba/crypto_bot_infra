@@ -20,11 +20,33 @@ resource "aws_instance" "main" {
     source      = "../scripts/init.sh"
     destination = "/tmp/init.sh"
   }
+ 
+  provisioner "file" {
+    source      = "../scripts/freqtrade.sh"
+    destination = "/tmp/freqtrade.sh"
+  }
+
+  provisioner "file" {
+    source      = "../freqtrade/config.json"
+    destination = "/home/ubuntu/config.json"
+  }
+
+  provisioner "file" {
+    source      = "../freqtrade/strategies/IchimokuStrategy.py"
+    destination = "/home/ubuntu/IchimokuStrategy.py"
+  }
+
+  provisioner "file" {
+    source      = "../freqtrade/docker-compose.yml"
+    destination = "/home/ubuntu/docker-compose.yml"
+  }
 
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/init.sh",
+      "chmod +x /tmp/freqtrade.sh",
       "/tmp/init.sh",
+      "/tmp/freqtrade.sh",
     ]
   }
 
