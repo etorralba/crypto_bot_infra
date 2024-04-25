@@ -28,9 +28,9 @@ apply:
 	@cd terraform && terraform apply -auto-approve
 	@echo "Done!"
 	@echo "Saving key..."
-	@rm -f  ~/.ssh/admin_key.pem
-	cd terraform && terraform output -raw private_key_pem > ~/.ssh/admin_key.pem
-	@chmod 400  ~/.ssh/admin_key.pem
+	@rm -f  ~/.ssh/${TF_VAR_environment}_ec2_admin_key.pem
+	cd terraform && terraform output -raw private_key_pem > ~/.ssh/${TF_VAR_environment}_ec2_admin_key.pem
+	@chmod 400  ~/.ssh/${TF_VAR_environment}_ec2_admin_key.pem
 
 destroy:
 	@echo "Destroying..."
@@ -39,5 +39,5 @@ destroy:
 
 connect:
 	@echo "Connecting..."
-	@cd terraform && ssh -i ~/.ssh/admin_key.pem ubuntu@$$(terraform output -raw instance_public_dns)
+	@cd terraform && ssh -i ~/.ssh/${TF_VAR_environment}_ec2_admin_key.pem ubuntu@$$(terraform output -raw instance_public_dns)
 	@echo "Done!"

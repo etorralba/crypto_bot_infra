@@ -16,6 +16,26 @@ resource "aws_instance" "main" {
 
   key_name = aws_key_pair.admin_gen_key.key_name
 
+  provisioner "file" {
+    source      = "../scripts/init.sh"
+    destination = "/tmp/init.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/init.sh",
+      "/tmp/init.sh",
+    ]
+  }
+
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ubuntu"
+    private_key = tls_private_key.admin.private_key_pem
+    timeout     = "4m"
+  }
+
   tags = {
     environment  = var.environment
     project      = var.project
@@ -29,12 +49,12 @@ resource "tls_private_key" "admin" {
 }
 
 resource "aws_key_pair" "admin_gen_key" {
-  key_name   = "admin_key"
+  key_name   = "${var.environment}_ec2_admin_key"
   public_key = tls_private_key.admin.public_key_openssh
 }
 
 resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
+  name        = "${var.environment}_allow_ssh"
   description = "Allow SSH inbound traffic"
 
   ingress {
