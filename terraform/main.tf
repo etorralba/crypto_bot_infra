@@ -59,6 +59,7 @@ resource "aws_instance" "main" {
   }
 
   tags = {
+    Name                  = "${var.environment}_freqtrade"
     environment  = var.environment
     project      = var.project
     organization = var.organization
