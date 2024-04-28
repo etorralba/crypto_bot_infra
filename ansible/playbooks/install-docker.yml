@@ -1,0 +1,32 @@
+- name: Install Docker
+  hosts: servers
+  become: yes
+
+  tasks:
+  - name: Update apt and install necessary packages
+    apt:
+      update_cache: yes
+      name: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common']
+      state: present
+
+  - name: Add Docker's official GPG key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker's stable repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+      state: present
+
+  - name: Install Docker
+    apt:
+      update_cache: yes
+      name: docker-ce
+      state: present
+
+  - name: Ensure Docker is running
+    service:
+      name: docker
+      state: started
+      enabled: yes

@@ -31,3 +31,6 @@ terraform.rc
 
 # Ignore .pem files for SSH keys
 *.pem
+
+# Ignore .ini filers for inventory files
+*.ini

@@ -67,8 +67,8 @@
     ],
     "telegram": {
         "enabled": true,
-        "token": "",
-        "chat_id": "",
+        "token": "7052484341:AAHUbGN0irfF6MGknVMxiPeOkn1PEIDoGAg",
+        "chat_id": "-4002701013",
         "keyboard": [
             ["/daily", "/stats", "/balance", "/profit"],
             ["/status table", "/performance"],

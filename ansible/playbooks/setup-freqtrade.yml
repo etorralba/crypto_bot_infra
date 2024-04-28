@@ -1,0 +1,36 @@
+- name: Copy files to remote server
+  hosts: servers
+  become: yes
+  tasks:
+    - name: Create directories for freqtrade
+      ansible.builtin.file:
+        path: /home/ubuntu/freqtrade
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0777'
+
+    - name: Copy docker-compose.yml to remote server
+      ansible.builtin.copy:
+        src: ../../freqtrade/docker-compose.yml
+        dest: /home/ubuntu/freqtrade/docker-compose.yml
+
+    - name: Set user_data to remote server
+      ansible.builtin.shell:
+        cmd: docker compose run --rm freqtrade create-userdir --userdir user_data
+        chdir: /home/ubuntu/freqtrade
+
+    - name: Copy config.json to remote server
+      ansible.builtin.copy:
+        src: ../../freqtrade/config.json
+        dest: /home/ubuntu/freqtrade/user_data/config.json
+
+    - name: Copy strategies/ to remote server
+      ansible.builtin.copy:
+        src: ../../freqtrade/strategies/
+        dest: /home/ubuntu/freqtrade/user_data/strategies/
+
+    - name: Run freqtrade bot
+      ansible.builtin.shell:
+        cmd: docker compose up -d
+        chdir: /home/ubuntu/freqtrade

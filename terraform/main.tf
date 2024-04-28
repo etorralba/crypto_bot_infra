@@ -17,36 +17,14 @@ resource "aws_instance" "main" {
   key_name = aws_key_pair.admin_gen_key.key_name
 
   provisioner "file" {
-    source      = "../scripts/init.sh"
+    content     = templatefile("../scripts/init.tpl", { public_key = tls_private_key.admin.public_key_openssh })
     destination = "/tmp/init.sh"
-  }
- 
-  provisioner "file" {
-    source      = "../scripts/freqtrade.sh"
-    destination = "/tmp/freqtrade.sh"
-  }
-
-  provisioner "file" {
-    source      = "../freqtrade/config.json"
-    destination = "/home/ubuntu/config.json"
-  }
-
-  provisioner "file" {
-    source      = "../freqtrade/strategies/IchimokuStrategy.py"
-    destination = "/home/ubuntu/IchimokuStrategy.py"
-  }
-
-  provisioner "file" {
-    source      = "../freqtrade/docker-compose.yml"
-    destination = "/home/ubuntu/docker-compose.yml"
   }
 
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/init.sh",
-      "chmod +x /tmp/freqtrade.sh",
       "/tmp/init.sh",
-      "/tmp/freqtrade.sh",
     ]
   }
 
@@ -59,7 +37,7 @@ resource "aws_instance" "main" {
   }
 
   tags = {
-    Name                  = "${var.environment}_freqtrade"
+    Name         = "${var.environment}_freqtrade"
     environment  = var.environment
     project      = var.project
     organization = var.organization
@@ -102,3 +80,7 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
+resource "local_file" "AnsibleInventory" {
+  filename = "../ansible/inventory.ini"
+  content  = "[servers]\n${aws_instance.main.public_ip} ansible_ssh_user=ansible ansible_ssh_private_key_file=~/.ssh/${var.environment}_ec2_admin_key.pem"
+}

@@ -29,7 +29,7 @@ apply:
 	@echo "Done!"
 	@echo "Saving key..."
 	@rm -f  ~/.ssh/${TF_VAR_environment}_ec2_admin_key.pem
-	cd terraform && terraform output -raw private_key_pem > ~/.ssh/${TF_VAR_environment}_ec2_admin_key.pem
+	@cd terraform && terraform output -raw private_key_pem > ~/.ssh/${TF_VAR_environment}_ec2_admin_key.pem
 	@chmod 400  ~/.ssh/${TF_VAR_environment}_ec2_admin_key.pem
 
 destroy:
@@ -39,5 +39,17 @@ destroy:
 
 connect:
 	@echo "Connecting..."
-	@cd terraform && ssh -i ~/.ssh/${TF_VAR_environment}_ec2_admin_key.pem ubuntu@$$(terraform output -raw instance_public_dns)
+	cd terraform && ssh -i ~/.ssh/${TF_VAR_environment}_ec2_admin_key.pem ubuntu@$$(terraform output -raw instance_public_dns)
+	@echo "Done!"
+
+.PHONY: ansible
+ansible:
+	@echo "Ping servers..."
+	ansible -i ./ansible/inventory.ini  servers -m ping
+	@echo "Install docker..."
+	ansible-playbook -i ./ansible/inventory.ini ./ansible/playbooks/install-docker.yml
+	@echo "Install docker-compose..."
+	ansible-playbook -i ./ansible/inventory.ini ./ansible/playbooks/install-docker-compose.yml
+	@echo "Setup Freqtrade..."
+	ansible-playbook -i ./ansible/inventory.ini ./ansible/playbooks/setup-freqtrade.yml
 	@echo "Done!"
